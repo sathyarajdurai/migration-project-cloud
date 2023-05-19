@@ -116,7 +116,7 @@ jobs:
             }
 
       - name: Terraform applying
-        if: github.base_ref == 'main'
+        if: github.head_ref == 'main'
         run:  terraform apply -auto-approve
         
       
