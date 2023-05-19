@@ -6,14 +6,14 @@ on:
     branches: [main]
 
 
-  
 jobs:
   terraform-actions:
     runs-on:  ubuntu-latest
     permissions:
       packages: write
-      contents: write
+      contents: read
       id-token: write
+      pull-requests: write
     defaults:
       run:
         working-directory: cloud
@@ -49,19 +49,71 @@ jobs:
           working-dir: cloud
           output-file: ../README.md
           output-method: inject
-          git-push: "true"
-      
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v2
-      #   with:
-      #     commit-message: terraform fmt
-      #     title: Reformat terraform files
-      #     body: Update terraform files to canonical format using `terraform fmt`
-      #     branch: automated-terraform-fmt
-
-      - name: Terraform planning
+          git-push: "true"  
+        
+      - name: Terraform Plan
+        id: plan
         #run:  TF_LOG=debug terraform plan
-        run: terraform plan
+        run: terraform plan -no-color
+        continue-on-error: true
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \'cloud\', Workflow: \`${{ github.workflow }}\`*`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
 
       # - name: Terraform applying
       #   run:  terraform apply -auto-approve
@@ -71,9 +123,7 @@ jobs:
   infracost-deploy:
     runs-on:  ubuntu-latest
     permissions:
-      packages: write
-      contents: write
-      id-token: write
+      contents: read
       pull-requests: write
     env:
       TF_ROOT: cloud
@@ -82,31 +132,38 @@ jobs:
         uses: infracost/actions/setup@v2
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Checkout base branch
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ github.event.pull_request.base.ref }}'
+
       
       - name: Generate Infracost cost estimate baseline
         run: |
-          infracost breakdown --path=${TF_root} \
+          infracost breakdown --path=${TF_ROOT} \
                               --format=json \
                               --out-file=/tmp/infracost-base.json
 
       # Checkout the current PR branch so we can create a diff.
       - name: Checkout PR branch
         uses: actions/checkout@v3
+        
 
       - name: Generate Infracost diff
         run: |
-          infracost diff --path=${TF_root} \
+          infracost diff --path=${TF_ROOT} \
                           --format=json \
                           --compare-to=/tmp/infracost-base.json \
                           --out-file=/tmp/infracost.json
-
+      
       - name: Post Infracost comment
         run: |
             infracost comment github --path=/tmp/infracost.json \
                                      --repo=$GITHUB_REPOSITORY \
                                      --github-token=${{github.token}} \
                                      --pull-request=${{github.event.pull_request.number}} \
-                                     --behavior=update
+                                     --behavior=new
   checkov-check:
     runs-on:  ubuntu-latest
     permissions:
@@ -139,9 +196,6 @@ jobs:
       packages: write
       contents: write
       id-token: write
-    defaults:
-      run:
-        working-directory: cloud  
     steps:      
       - name: Setup TFLint 
         uses: terraform-linters/setup-tflint@v3
