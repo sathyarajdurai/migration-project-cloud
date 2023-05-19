@@ -16,7 +16,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: .
+        working-directory: cloud
     steps:
       - name: Clone our repository
         uses: actions/checkout@v3
@@ -46,8 +46,8 @@ jobs:
       - name: Render terraform docs 
         uses: terraform-docs/gh-actions@v1.0.0
         with:
-          working-dir: .
-          output-file: README.md
+          working-dir: cloud
+          output-file: ../README.md
           output-method: inject
           git-push: "true"
       
@@ -74,8 +74,9 @@ jobs:
       packages: write
       contents: write
       id-token: write
+      pull-requests: write
     env:
-      TF_ROOT: dev
+      TF_ROOT: cloud
     steps:
       - name: Setup Infracost
         uses: infracost/actions/setup@v2
@@ -84,7 +85,7 @@ jobs:
       
       - name: Generate Infracost cost estimate baseline
         run: |
-          infracost breakdown --path=${TF_ROOT} \
+          infracost breakdown --path=${TF_root} \
                               --format=json \
                               --out-file=/tmp/infracost-base.json
 
@@ -94,7 +95,7 @@ jobs:
 
       - name: Generate Infracost diff
         run: |
-          infracost diff --path=${TF_ROOT} \
+          infracost diff --path=${TF_root} \
                           --format=json \
                           --compare-to=/tmp/infracost-base.json \
                           --out-file=/tmp/infracost.json
@@ -112,7 +113,7 @@ jobs:
       packages: write
       contents: write
       id-token: write
-
+    
     steps:
       - name: Checkov
         uses: actions/checkout@v3
@@ -126,7 +127,7 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: .
+          directory: cloud
           framework: terraform
           soft_fail: true
           download_external_modules: false
@@ -138,7 +139,9 @@ jobs:
       packages: write
       contents: write
       id-token: write
-      
+    defaults:
+      run:
+        working-directory: cloud  
     steps:      
       - name: Setup TFLint 
         uses: terraform-linters/setup-tflint@v3
@@ -147,8 +150,7 @@ jobs:
       
       - name: Init TFLint
         run: tflint --init
-        env:
-        # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+        env:       
           GITHUB_TOKEN: ${{ github.token }}
       
       - name: Run the Action
