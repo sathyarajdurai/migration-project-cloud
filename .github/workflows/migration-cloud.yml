@@ -76,7 +76,7 @@ jobs:
       id-token: write
       pull-requests: write
     env:
-      TF_ROOT: /
+      TF_ROOT: .
     steps:
       - name: Setup Infracost
         uses: infracost/actions/setup@v2
