@@ -115,8 +115,9 @@ jobs:
               })
             }
 
-      # - name: Terraform applying
-      #   run:  terraform apply -auto-approve
+      - name: Terraform applying
+        if: github.event_name == 'merge'
+        run:  terraform apply -auto-approve
         
       
       
