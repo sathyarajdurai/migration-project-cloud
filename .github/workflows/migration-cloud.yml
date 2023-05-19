@@ -116,7 +116,7 @@ jobs:
             }
 
       - name: Terraform applying
-        if: github.head_ref == 'main'
+        if: github.event_name != 'pull_request'
         run:  terraform apply -auto-approve
         
       
