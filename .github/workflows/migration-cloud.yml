@@ -145,7 +145,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: /cloud
+        working-directory: .cloud
     steps:      
       - name: Setup TFLint 
         uses: terraform-linters/setup-tflint@v3
