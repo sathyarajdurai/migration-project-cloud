@@ -1,0 +1,154 @@
+name: migartion-cloud
+on: 
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+
+  
+jobs:
+  terraform-actions:
+    runs-on:  ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+      id-token: write
+    steps:
+      - name: Clone our repository
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ github.event.pull_request.base.ref }}'
+      
+      - name: AWS Authentication
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::744618523292:role/github-actions-iodc
+          aws-region: eu-west-1
+          role-session-name: GithubmigratiocloudnDeploy
+      
+      - name: Terraform Set up
+        uses: hashicorp/setup-terraform@v1
+
+      - name:  Terraform initialization
+        run:  terraform init
+
+      - name:  Terraform validation
+        run:  terraform validate
+
+      - name: Terraform readme
+        id: fmt
+        run:  terraform fmt
+
+      - name: Render terraform docs 
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: "true"
+      
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v2
+      #   with:
+      #     commit-message: terraform fmt
+      #     title: Reformat terraform files
+      #     body: Update terraform files to canonical format using `terraform fmt`
+      #     branch: automated-terraform-fmt
+
+      - name: Terraform planning
+        #run:  TF_LOG=debug terraform plan
+        run: terraform plan
+
+      # - name: Terraform applying
+      #   run:  terraform apply -auto-approve
+        
+      
+      
+  infracost-deploy:
+    runs-on:  ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+      id-token: write
+    env:
+      TF_ROOT: dev
+    steps:
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v2
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+      
+      - name: Generate Infracost cost estimate baseline
+        run: |
+          infracost breakdown --path=${TF_ROOT} \
+                              --format=json \
+                              --out-file=/tmp/infracost-base.json
+
+      # Checkout the current PR branch so we can create a diff.
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+
+      - name: Generate Infracost diff
+        run: |
+          infracost diff --path=${TF_ROOT} \
+                          --format=json \
+                          --compare-to=/tmp/infracost-base.json \
+                          --out-file=/tmp/infracost.json
+
+      - name: Post Infracost comment
+        run: |
+            infracost comment github --path=/tmp/infracost.json \
+                                     --repo=$GITHUB_REPOSITORY \
+                                     --github-token=${{github.token}} \
+                                     --pull-request=${{github.event.pull_request.number}} \
+                                     --behavior=update
+  checkov-check:
+    runs-on:  ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkov
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Test with Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform
+          soft_fail: true
+          download_external_modules: false
+          quiet: true
+  
+  tflint-check:
+    runs-on:  ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+      id-token: write
+      
+    steps:      
+      - name: Setup TFLint 
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: latest
+      
+      - name: Init TFLint
+        run: tflint --init
+        env:
+        # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+          GITHUB_TOKEN: ${{ github.token }}
+      
+      - name: Run the Action
+        run: tflint -f compact
+         
+      
