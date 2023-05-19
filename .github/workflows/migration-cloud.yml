@@ -70,8 +70,7 @@ jobs:
   infracost-deploy:
     runs-on:  ubuntu-latest
     permissions:
-      packages: write
-      contents: write
+      contents: read
       pull-requests: write
     env:
       TF_ROOT: cloud
@@ -80,6 +79,12 @@ jobs:
         uses: infracost/actions/setup@v2
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Checkout base branch
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ github.event.pull_request.base.ref }}'
+
       
       - name: Generate Infracost cost estimate baseline
         run: |
@@ -90,6 +95,7 @@ jobs:
       # Checkout the current PR branch so we can create a diff.
       - name: Checkout PR branch
         uses: actions/checkout@v3
+        
 
       - name: Generate Infracost diff
         run: |
@@ -97,7 +103,7 @@ jobs:
                           --format=json \
                           --compare-to=/tmp/infracost-base.json \
                           --out-file=/tmp/infracost.json
-
+      
       - name: Post Infracost comment
         run: |
             infracost comment github --path=/tmp/infracost.json \
