@@ -53,7 +53,7 @@ resource "time_sleep" "wait_240_seconds" {
 }
 
 resource "aws_lb_listener" "front_end" {
-  depends_on = [time_sleep.wait_240_seconds]
+  depends_on        = [time_sleep.wait_240_seconds]
   load_balancer_arn = aws_lb.migration_lb.arn
   port              = "443"
   protocol          = "HTTPS"
