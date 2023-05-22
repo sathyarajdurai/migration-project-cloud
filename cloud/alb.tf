@@ -45,7 +45,6 @@ resource "aws_security_group" "internet_face" {
   }
 }
 
-
 resource "time_sleep" "wait_180_seconds" {
   depends_on = [aws_route53_record.lb_validate]
 

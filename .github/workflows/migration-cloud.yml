@@ -9,11 +9,11 @@ on:
 jobs:
   terraform-actions:
     runs-on:  ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-      id-token: write
-      pull-requests: write
+    permissions: write-all
+      # packages: write
+      # contents: read
+      # id-token: write
+      # pull-requests: write
     defaults:
       run:
         working-directory: cloud
@@ -43,13 +43,14 @@ jobs:
         id: fmt
         run:  terraform fmt
 
-      # - name: Render terraform docs 
-      #   uses: terraform-docs/gh-actions@v1.0.0
-      #   with:
-      #     working-dir: cloud
-      #     output-file: ../README.md
-      #     output-method: inject
-      #     git-push: "true"  
+      - name: Render terraform docs 
+        if: github.event_name == 'pull_request'
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: cloud
+          output-file: ../README.md
+          output-method: inject
+          git-push: "true"  
         
       - name: Terraform Plan
         id: plan
