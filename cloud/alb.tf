@@ -46,14 +46,14 @@ resource "aws_security_group" "internet_face" {
 }
 
 
-resource "time_sleep" "wait_240_seconds" {
+resource "time_sleep" "wait_180_seconds" {
   depends_on = [aws_route53_record.lb_validate]
 
-  create_duration = "240s"
+  create_duration = "180s"
 }
 
 resource "aws_lb_listener" "front_end" {
-  depends_on        = [time_sleep.wait_240_seconds]
+  depends_on        = [time_sleep.wait_180_seconds]
   load_balancer_arn = aws_lb.migration_lb.arn
   port              = "443"
   protocol          = "HTTPS"
