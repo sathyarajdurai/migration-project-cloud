@@ -13,10 +13,10 @@ resource "aws_route53_zone" "public_member" {
   }
 }
 
-# resource "aws_route53_record" "dev-ns" {
-#   zone_id = aws_route53_zone.public_common.zone_id
-#   name    = "capci-gp4.aws.crlabs.cloud"
-#   type    = "NS"
-#   ttl     = "30"
-#   records = aws_route53_zone.public_member.name_servers
-# }
+resource "aws_route53_record" "resolve_test" {
+  zone_id = aws_route53_zone.public_member.zone_id
+  name    = "capci-gp4.aws.crlabs.cloud"
+  type    = "A"
+  ttl     = "30"
+  records = [jsondecode(data.aws_secretsmanager_secret_version.my_ip.secret_string).myaddress]
+}

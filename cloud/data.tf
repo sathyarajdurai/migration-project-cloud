@@ -33,3 +33,10 @@ data "aws_elb_service_account" "main" {}
 data "aws_kms_key" "kms_key" {
   key_id = "alias/backendkms"
 }
+
+data "aws_secretsmanager_secret" "by_value" {
+  name = "myaddress"
+}
+data "aws_secretsmanager_secret_version" "my_ip" {
+  secret_id = data.aws_secretsmanager_secret.by_value.id
+}
