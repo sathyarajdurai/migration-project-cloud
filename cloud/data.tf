@@ -34,9 +34,10 @@ data "aws_kms_key" "kms_key" {
   key_id = "alias/backendkms"
 }
 
-data "aws_secretsmanager_secret" "by_value" {
+data "aws_secretsmanager_secret" "my_ip" {
   name = "myaddress"
 }
-data "aws_secretsmanager_secret_version" "my_ip" {
-  secret_id = data.aws_secretsmanager_secret.by_value.id
+
+data "aws_secretsmanager_secret_version" "by_value" {
+  secret_id     = data.aws_secretsmanager_secret.my_ip.id
 }
