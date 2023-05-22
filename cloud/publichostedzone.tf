@@ -2,8 +2,6 @@
 #   name = "capci-gp4.aws.crlabs.cloud"
 # }
 
-
-
 resource "aws_route53_zone" "public_member" {
   name = "capci-gp4.aws.crlabs.cloud"
 
