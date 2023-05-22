@@ -2,7 +2,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "4.0.1"
 
-  name = "migration-vpc"
+  name = "cloud-migration-vpc"
   cidr = var.vpc_cidr
 
   azs              = slice(data.aws_availability_zones.available.names, 0, var.number_of_azs)
