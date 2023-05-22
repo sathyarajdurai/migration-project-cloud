@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "allow_lb" {
     ]
 
     resources = [
-      "arn:aws:s3:::migration-elb-logs-cr/elblogs/AWSLogs/*"
+      "arn:aws:s3:::migration-elb-logs-cr/elblogs/AWSLogs/744618523292/*"
     ]
 
     condition {
