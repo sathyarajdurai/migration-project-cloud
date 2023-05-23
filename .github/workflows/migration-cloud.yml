@@ -191,6 +191,8 @@ jobs:
           soft_fail: true
           download_external_modules: false
           quiet: true
+          output_format: json # optional: the output format, one of: cli, json, junitxml, github_failed_only, or sarif. Default: sarif
+          output_file_path: .
   
   tflint-check:
     runs-on:  ubuntu-latest
