@@ -169,9 +169,9 @@ jobs:
   checkov-check:
     runs-on:  ubuntu-latest
     permissions:
-      packages: write
       contents: write
-      id-token: write
+      security-events: write
+      actions: read
     
     steps:
       - name: Checkov
@@ -189,8 +189,16 @@ jobs:
           directory: cloud
           framework: terraform
           soft_fail: true
-          download_external_modules: false
+          download_external_modules: true
           quiet: true
+          output_format: sarif # optional: the output format, one of: cli, json, junitxml, github_failed_only, or sarif. Default: sarif
+          output_file_path: results.sarif
+          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
+        with:
+          sarif_file: results.sarif
   
   tflint-check:
     runs-on:  ubuntu-latest
