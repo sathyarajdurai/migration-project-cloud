@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "allow_lb" {
     ]
 
     resources = [
-      "arn:aws:s3:::migration-elb-logs-cr/elblogs/AWSLogs/744618523292/*"
+      "arn:aws:s3:::migration-elb-logs-cr/elblogs/AWSLogs/*"
     ]
 
     condition {
@@ -84,7 +84,7 @@ resource "aws_s3_bucket" "vpc_logs" {
   }
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
@@ -193,8 +193,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_encryption" {
   bucket = aws_s3_bucket.vpc_logs.id
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm     = "aws:kms"
-      kms_master_key_id = data.aws_kms_key.kms_key.arn
+      sse_algorithm = "AES256"
     }
   }
 }
