@@ -84,7 +84,7 @@ resource "aws_s3_bucket" "vpc_logs" {
   }
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
