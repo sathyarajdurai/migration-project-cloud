@@ -16,3 +16,7 @@
 #     value = [jsondecode(data.aws_secretsmanager_secret_version.by_value.secret_string).myaddress]
 #     sensitive = true
 # }
+
+output "volume_id" {
+    value = data.aws_ebs_volume.test.id
+}

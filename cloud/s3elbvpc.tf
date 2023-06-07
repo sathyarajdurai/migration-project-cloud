@@ -135,7 +135,7 @@ data "aws_iam_policy_document" "allow_vpc" {
       variable = "aws:SourceAccount"
 
       values = [
-        "744618523292"
+        "722257929281"
       ]
     }
     condition {
@@ -143,7 +143,7 @@ data "aws_iam_policy_document" "allow_vpc" {
       variable = "aws:SourceArn"
 
       values = [
-        "arn:aws:logs:*:744618523292:*"
+        "arn:aws:logs:*:722257929281:*"
       ]
     }
   }
@@ -169,7 +169,7 @@ data "aws_iam_policy_document" "allow_vpc" {
       variable = "aws:SourceAccount"
 
       values = [
-        "744618523292"
+        "722257929281"
       ]
     }
     condition {
@@ -177,7 +177,7 @@ data "aws_iam_policy_document" "allow_vpc" {
       variable = "aws:SourceArn"
 
       values = [
-        "arn:aws:logs:*:744618523292:*"
+        "arn:aws:logs:*:722257929281:*"
       ]
     }
   }
@@ -197,3 +197,5 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_encryption" {
     }
   }
 }
+
+

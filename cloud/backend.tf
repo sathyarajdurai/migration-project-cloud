@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket         = "talent-academy-sathyaraj-lab-tfstates2"
-    key            = "talent-academy/migration-lab/terraform.tfstates"
+    bucket         = "talent-academy-sathyaraj-lab-tfstates3"
+    key            = "talent-academy/migration-cloud/terraform.tfstates"
     dynamodb_table = "terraform-lock"
   }
 }
