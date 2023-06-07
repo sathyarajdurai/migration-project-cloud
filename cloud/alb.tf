@@ -41,11 +41,11 @@ resource "aws_lb_listener" "front_end" {
   #   }
   # }
 
-  default_action { 
+  default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.migrated_webserver.arn
   }
-  
+
 }
 
 resource "aws_lb_listener" "redirect_front_end" {
@@ -60,48 +60,24 @@ resource "aws_lb_listener" "redirect_front_end" {
       port        = "443"
       protocol    = "HTTPS"
       status_code = "HTTP_302"
-      host = "www.capci-gp4.aws.crlabs.cloud"
-      path = "/phpmyadmin/"
-      query = ""
+      host        = "www.capci-gp4.aws.crlabs.cloud"
+      path        = "/phpmyadmin/"
+      query       = ""
     }
   }
 }
 
-# resource "aws_lb_listener_rule" "redirect_http_to_https" {
-#   listener_arn = aws_lb_listener.redirect_front_end.arn
 
-#   action {
-#     type = "redirect"
-
-#     redirect {
-#       port        = "443"
-#       protocol    = "HTTPS"
-#       status_code = "HTTP_302"
-#     }
-#   }
-
-#   condition {
-#     host_header {
-#       values = ["www.capci-gp4.aws.crlabs.cloud"]
-#     }
-#   }
-
-#   condition {
-#     path_pattern {
-#       values = ["/phpmyadmin/"]
-#     }
-#   }
-# }
 
 resource "aws_lb_target_group" "migrated_webserver" {
-  name     = "migrated-web-server"
+  name        = "migrated-web-server"
   target_type = "instance"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = module.vpc.vpc_id
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = module.vpc.vpc_id
   health_check {
-    path = "/"
-    port = 80
+    path     = "/"
+    port     = 80
     protocol = "HTTP"
 
   }
