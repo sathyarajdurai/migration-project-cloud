@@ -1,0 +1,1 @@
+{"Path":"/Users/sathyaraj.durai/src/migration-project-cloud/cloud","Version":"2.0","Modules":[{"Key":"vpc","Source":"registry.terraform.io/terraform-aws-modules/vpc/aws","Version":"4.0.1","Dir":".infracost/terraform_modules/dde2e358eb651fd14e60b4c3b77f00c5"}]}
