@@ -1,5 +1,5 @@
 # resource "aws_vpc_peering_connection" "migration" {
-#   peer_owner_id = 722257929281
+#   peer_owner_id = data.aws_caller_identity.peer.account_id
 #   peer_vpc_id   = data.aws_vpc.on_prem.id
 #   vpc_id        = data.aws_vpc.cloud.id
 #   auto_accept = true
@@ -26,7 +26,7 @@ data "aws_caller_identity" "peer" {
 resource "aws_vpc_peering_connection" "cloud_peer" {
   vpc_id        = data.aws_vpc.cloud.id
   peer_vpc_id   = data.aws_vpc.on_prem.id
-  peer_owner_id = 722257929281 #data.aws_caller_identity.peer.account_id
+  peer_owner_id = data.aws_caller_identity.peer.account_id
   peer_region   = "us-east-1"
   auto_accept   = false
 
