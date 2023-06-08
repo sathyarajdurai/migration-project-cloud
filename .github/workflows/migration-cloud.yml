@@ -130,11 +130,11 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    # strategy:
-    #   matrix:
-    #     directory: [cloud, migrated-webserver, rds, secrets, vpcpeer]
+    strategy:
+      matrix:
+        directory: [cloud, migrated-webserver, rds, secrets, vpcpeer]
     env:
-      TF_ROOT: infra.yml
+      TF_ROOT: ${{ matrix.directory }}
     steps:
       - name: Setup Infracost
         uses: infracost/actions/setup@v2
