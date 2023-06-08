@@ -14,9 +14,13 @@ jobs:
       # contents: read
       # id-token: write
       # pull-requests: write
+    
+    strategy:
+      matrix:
+        directory: [cloud, migrated-webserver, rds, secrets, vpcpeer]
     defaults:
       run:
-        working-directory: cloud
+        working-directory: ${{ matrix.directory }}
     steps:
       - name: Clone our repository
         uses: actions/checkout@v3
@@ -26,7 +30,7 @@ jobs:
       - name: AWS Authentication
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::744618523292:role/github-actions-iodc
+          role-to-assume: arn:aws:iam::722257929281:role/github-actions-iodc
           aws-region: eu-west-1
           role-session-name: GithubmigratiocloudnDeploy
       
@@ -97,7 +101,7 @@ jobs:
 
             </details>
 
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \'cloud\', Workflow: \`${{ github.workflow }}\`*`;
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \'${{ matrix.directory }}\', Workflow: \`${{ github.workflow }}\`*`;
 
             // 3. If we have a comment, update it, otherwise create a new one
             if (botComment) {
@@ -127,8 +131,11 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    strategy:
+      matrix:
+        directory: [cloud, migrated-webserver, rds, secrets, vpcpeer]
     env:
-      TF_ROOT: cloud
+      TF_ROOT: ${{ matrix.directory }}
     steps:
       - name: Setup Infracost
         uses: infracost/actions/setup@v2
@@ -172,7 +179,12 @@ jobs:
       contents: write
       security-events: write
       actions: read
-    
+    strategy:
+      matrix:
+        directory: [cloud, migrated-webserver, rds, secrets, vpcpeer]
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
     steps:
       - name: Checkov
         uses: actions/checkout@v3

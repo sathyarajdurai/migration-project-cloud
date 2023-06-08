@@ -21,12 +21,12 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-# data "aws_security_group" "alb"{
-#     filter{
-#         name = "tag:Name"
-#         values = ["allow-all-traffic"]
-#     }
-# }
+data "aws_instance" "ec2"{
+    filter{
+        name = "tag:Name"
+        values = ["Migrated-webserver-Server"]
+    }
+}
 
 data "aws_elb_service_account" "main" {}
 
@@ -40,4 +40,16 @@ data "aws_secretsmanager_secret" "my_ip" {
 
 data "aws_secretsmanager_secret_version" "by_value" {
   secret_id     = data.aws_secretsmanager_secret.my_ip.id
+}
+
+data "aws_ebs_volume" "test" {
+  # filter {
+  #   name   = "attachment.device"
+  #   values = ["/dev/xvdf"]
+  # }
+
+  filter {
+    name   = "attachment.instance-id"
+    values = [data.aws_instance.ec2.id]
+  }
 }

@@ -25,6 +25,6 @@ resource "aws_route53_record" "alb_r53" {
   name    = "resolve-test.capci-gp4.aws.crlabs.cloud"
   type    = "A"
   ttl     = 300
-  records = [jsondecode(data.aws_secretsmanager_secret_version.by_value.secret_string).myaddress]
+  records = [element(split("/",jsondecode(data.aws_secretsmanager_secret_version.by_value.secret_string)["myaddress1"]),0)]
 }
 
