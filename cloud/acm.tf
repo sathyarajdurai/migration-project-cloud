@@ -15,8 +15,6 @@ resource "aws_acm_certificate" "mig_cert" {
   }
 }
 
-
-
 resource "aws_route53_record" "lb_validate" {
   for_each = {
     for dvo in aws_acm_certificate.mig_cert.domain_validation_options : dvo.domain_name => {
