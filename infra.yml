@@ -1,0 +1,25 @@
+log_level: warn
+no_color: true
+
+projects:
+  terraform:
+    - name: cloud
+      dir: cloud
+
+    - name: migrated webserver
+      dir: migrated-webserver
+
+    - name: rds
+      dir: rds
+
+    - name: secrets
+      dir: secrets
+
+    - name: vpc peer
+      dir: vpcpeer
+
+
+outputs:
+  - format: table
+    show_skipped: true
+    group_by: projects
