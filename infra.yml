@@ -22,4 +22,4 @@ projects:
 outputs:
   - format: table
     show_skipped: true
-    group_by: project
+    group_by: projects
