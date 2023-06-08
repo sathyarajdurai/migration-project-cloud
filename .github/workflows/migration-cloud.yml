@@ -231,5 +231,3 @@ jobs:
       
       - name: Run the Action
         run: tflint -f compact
-         
-      
