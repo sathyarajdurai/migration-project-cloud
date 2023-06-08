@@ -17,11 +17,11 @@
 #     sensitive = true
 # }
 
-output "ip" {
-  value = aws_dms_replication_instance.replication_inst.replication_instance_private_ips
+# output "ip" {
+#   value = aws_dms_replication_instance.replication_inst.replication_instance_private_ips
   
-  # value = element(tolist(aws_dms_replication_instance.replication_inst.replication_instance_private_ips),0)
-}
+#   # value = element(tolist(aws_dms_replication_instance.replication_inst.replication_instance_private_ips),0)
+# }
 
 output "secret_arn" {
   value = element(values(element(tolist(aws_db_instance.cloud_db.master_user_secret),0)),1)
