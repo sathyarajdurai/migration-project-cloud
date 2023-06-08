@@ -1,5 +1,3 @@
-
-
 data "aws_vpc" "cloud"{
   filter {
     name = "tag:Name"
