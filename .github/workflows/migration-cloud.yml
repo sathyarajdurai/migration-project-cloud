@@ -124,8 +124,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run:  terraform apply -auto-approve
         
-      
-      
+          
   infracost-deploy:
     runs-on:  ubuntu-latest
     permissions:
