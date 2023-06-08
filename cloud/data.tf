@@ -9,12 +9,9 @@
 #     }
 # }
 
-# data "aws_subnet" "public1"{
-#     filter{
-#         name = "tag:Name"
-#         values = ["migration-vpc-public-eu-west-1b"]
-#     }
-# }
+data "aws_caller_identity" "id" {
+  provider = aws.ireland
+}
 
 data "aws_availability_zones" "available" {
 

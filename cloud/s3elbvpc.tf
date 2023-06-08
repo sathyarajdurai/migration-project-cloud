@@ -105,6 +105,7 @@ resource "aws_s3_bucket_versioning" "vpc_version" {
 
 }
 
+
 data "aws_iam_policy_document" "allow_vpc" {
   statement {
     sid = "AWSLogDeliveryWrite"
@@ -135,7 +136,7 @@ data "aws_iam_policy_document" "allow_vpc" {
       variable = "aws:SourceAccount"
 
       values = [
-        "722257929281"
+        local.account_id
       ]
     }
     condition {
@@ -143,7 +144,7 @@ data "aws_iam_policy_document" "allow_vpc" {
       variable = "aws:SourceArn"
 
       values = [
-        "arn:aws:logs:*:722257929281:*"
+        "arn:aws:logs:*:${local.account_id}:*"
       ]
     }
   }
@@ -169,7 +170,7 @@ data "aws_iam_policy_document" "allow_vpc" {
       variable = "aws:SourceAccount"
 
       values = [
-        "722257929281"
+        local.account_id
       ]
     }
     condition {
@@ -177,7 +178,7 @@ data "aws_iam_policy_document" "allow_vpc" {
       variable = "aws:SourceArn"
 
       values = [
-        "arn:aws:logs:*:722257929281:*"
+        "arn:aws:logs:*:${local.account_id}:*"
       ]
     }
   }
