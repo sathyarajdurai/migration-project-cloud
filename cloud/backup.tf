@@ -30,13 +30,13 @@ resource "aws_backup_vault" "migrate_vault" {
 #   kms_key_arn = aws_kms_key.example.arn
 }
 
-resource "aws_backup_region_settings" "test" {
-  resource_type_opt_in_preference = {   
-    "EBS"             = true
-    "EC2"             = true
-    "RDS"             = true
-  }
-}
+# resource "aws_backup_region_settings" "test" {
+#   resource_type_opt_in_preference = {   
+#     "EBS"             = true
+#     "EC2"             = true
+#     "RDS"             = true
+#   }
+# }
 
 data "aws_iam_policy_document" "assume_role" {
   statement {
