@@ -52,7 +52,7 @@ resource "aws_route" "route_cloud" {
   vpc_peering_connection_id = aws_vpc_peering_connection.cloud_peer.id
 }
 
-# resource "aws_route" "route_cloud_private" {
+# resource "aws_route" "route_cloud" {
 #   route_table_id            = data.aws_route_table.cloud_private.id
 #   destination_cidr_block    = var.onprem_cidr
 #   vpc_peering_connection_id = aws_vpc_peering_connection.cloud_peer.id
