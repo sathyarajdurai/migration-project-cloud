@@ -58,7 +58,7 @@ jobs:
       - name: Terraform Plan secrets
         id: plan
         # working-directory: secrets
-        if: github.path == 'secrets'
+        if: github.path == './secrets'
         run: terraform plan -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         # continue-on-error: true
 
