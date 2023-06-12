@@ -59,7 +59,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         #run:  TF_LOG=debug terraform plan
-        run: terraform plan -no-color
+        run: terraform plan -no-color -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         continue-on-error: true
 
       - uses: actions/github-script@v6
@@ -102,27 +102,16 @@ jobs:
             </details>
 
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \'${{ matrix.directory }}\', Workflow: \`${{ github.workflow }}\`*`;
-
-            // 3. If we have a comment, update it, otherwise create a new one
-            if (botComment) {
-              github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: output
-              })
-            } else {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: output
-              })
-            }
-
+            github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+            })
+            
       - name: Terraform applying
         if: github.event_name != 'pull_request'
-        run:  terraform apply -auto-approve
+        run:  terraform apply -auto-approve -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         
           
   infracost-deploy:
