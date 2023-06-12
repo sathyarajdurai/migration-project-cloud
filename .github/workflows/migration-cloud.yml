@@ -38,7 +38,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name:  Terraform initialization
-        run:  terraform init
+        run:  terraform init 
 
       - name:  Terraform validation
         run:  terraform validate
@@ -57,7 +57,8 @@ jobs:
       #     git-push: "true"  
       - name: Terraform Plan secrets
         id: plan
-        working-directory: secrets
+        # working-directory: secrets
+        if: github.env == 'secrets'
         run: terraform plan -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         # continue-on-error: true
 
