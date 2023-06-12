@@ -56,14 +56,14 @@ jobs:
       #     git-push: "true"  
       - name: Terraform Plan secrets
         id: plan
-        working-directory: secrets
+        working-directory: ./secrets
         run: terraform plan -no-color -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         continue-on-error: true
 
       - name: Terraform Plan all
         id: plan_all
         #run:  TF_LOG=debug terraform plan
-        working-directory: ${{ matrix.directory }}
+        working-directory: ./cloud
         run: terraform plan -no-color 
         continue-on-error: true
 
