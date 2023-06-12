@@ -9,8 +9,6 @@ on:
 jobs:
   terraform-actions:
     runs-on:  ubuntu-latest
-    env:
-      directory: ./secrets
     permissions: write-all
       # packages: write
       # contents: read
@@ -60,7 +58,7 @@ jobs:
       - name: Terraform Plan secrets
         id: plan
         # working-directory: secrets
-        if: github.env == ${{env.directory}}
+        if: github.path == 'secrets'
         run: terraform plan -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         # continue-on-error: true
 
