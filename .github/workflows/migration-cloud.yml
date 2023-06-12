@@ -9,6 +9,8 @@ on:
 jobs:
   terraform-actions:
     runs-on:  ubuntu-latest
+    env:
+      working-directory: secrets
     permissions: write-all
       # packages: write
       # contents: read
@@ -17,10 +19,7 @@ jobs:
     
     strategy:
       matrix:
-        directory: [cloud, migrated-webserver, rds, secrets, vpcpeer]
-    defaults:
-      run:
-        working-directory: ${{ matrix.directory }}
+        directory: [cloud, migrated-webserver, rds, vpcpeer]
     steps:
       - name: Clone our repository
         uses: actions/checkout@v3
@@ -55,11 +54,17 @@ jobs:
       #     output-file: ../README.md
       #     output-method: inject
       #     git-push: "true"  
-        
-      - name: Terraform Plan
+      - name: Terraform Plan secrets
         id: plan
+        working-directory: ./secrets
+        run: terraform plan -no-color -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
+        continue-on-error: true
+
+      - name: Terraform Plan all
+        id: plan_all
         #run:  TF_LOG=debug terraform plan
-        run: terraform plan -no-color
+        working-directory: ${{ matrix.directory }}
+        run: terraform plan -no-color 
         continue-on-error: true
 
       - uses: actions/github-script@v6
@@ -102,27 +107,16 @@ jobs:
             </details>
 
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \'${{ matrix.directory }}\', Workflow: \`${{ github.workflow }}\`*`;
-
-            // 3. If we have a comment, update it, otherwise create a new one
-            if (botComment) {
-              github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: output
-              })
-            } else {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: output
-              })
-            }
-
+            github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+            })
+            
       - name: Terraform applying
         if: github.event_name != 'pull_request'
-        run:  terraform apply -auto-approve
+        run:  terraform apply -auto-approve -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         
           
   infracost-deploy:
@@ -197,7 +191,7 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: cloud
+          directory: ${{ matrix.directory }}
           framework: terraform
           soft_fail: true
           download_external_modules: true
