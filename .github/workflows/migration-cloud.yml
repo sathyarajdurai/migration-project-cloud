@@ -17,7 +17,7 @@ jobs:
     
     strategy:
       matrix:
-        directory: [cloud, migrated-webserver, rds, vpcpeer]
+        directory: [cloud, migrated-webserver, rds, vpcpeer,secrets]
     defaults:
         run:
           working-directory: ${{matrix.directory}}
