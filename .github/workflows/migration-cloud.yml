@@ -56,7 +56,7 @@ jobs:
       #     git-push: "true"  
       - name: Terraform Plan secrets
         id: plan
-        working-directory: ${{env.working-directory}} 
+        working-directory: secrets
         run: terraform plan -no-color -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         continue-on-error: true
 
