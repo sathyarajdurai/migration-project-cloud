@@ -10,7 +10,7 @@ jobs:
   terraform-actions:
     runs-on:  ubuntu-latest
     env:
-      working.directory: ./secrets
+      directory: ./secrets
     permissions: write-all
       # packages: write
       # contents: read
@@ -19,7 +19,7 @@ jobs:
     
     strategy:
       matrix:
-        directory: [cloud, migrated-webserver, rds, vpcpeer, secrets]
+        directory: [cloud, migrated-webserver, rds, vpcpeer]
     defaults:
         run:
           working-directory: ${{matrix.directory}}
@@ -60,7 +60,7 @@ jobs:
       - name: Terraform Plan secrets
         id: plan
         # working-directory: secrets
-        if: github.env == ${{env.working.directory}}
+        if: github.env == ${{env.directory}}
         run: terraform plan -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         # continue-on-error: true
 
