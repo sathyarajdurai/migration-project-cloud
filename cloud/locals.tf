@@ -6,4 +6,7 @@ locals {
   database_subnet_cidr = cidrsubnet(local.private_subnet_cidr, 3, 2)
   # redshift_subnet_cidr = cidrsubnet(var.vpc_cidr, 7, 5)
   account_id = data.aws_caller_identity.id.account_id
+
 }
+
+

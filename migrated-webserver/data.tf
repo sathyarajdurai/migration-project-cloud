@@ -46,6 +46,6 @@ data "aws_secretsmanager_secret_version" "db_password" {
   secret_id = data.aws_secretsmanager_secret.db_secret.id
 }
 
-data "aws_iam_role" "ssm_role" {
-  name = "ssm_role"
-}
+# data "aws_iam_role" "ssm_role" {
+#   name = "ssm_role"
+# }

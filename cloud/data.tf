@@ -40,10 +40,10 @@ data "aws_secretsmanager_secret_version" "by_value" {
 }
 
 data "aws_ebs_volume" "test" {
-  # filter {
-  #   name   = "attachment.device"
-  #   values = ["/dev/xvdf"]
-  # }
+  filter {
+    name   = "volume-type"
+    values = ["gp3"]
+  }
 
   filter {
     name   = "attachment.instance-id"
