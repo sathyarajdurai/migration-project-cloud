@@ -10,7 +10,7 @@ jobs:
   terraform-actions:
     runs-on:  ubuntu-latest
     env:
-      working-directory: ./secrets
+      working-directory: secrets
     permissions: write-all
       # packages: write
       # contents: read
