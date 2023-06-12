@@ -9,8 +9,6 @@ on:
 jobs:
   terraform-actions:
     runs-on:  ubuntu-latest
-    env:
-      working-directory: secrets
     permissions: write-all
       # packages: write
       # contents: read
@@ -19,7 +17,7 @@ jobs:
     
     strategy:
       matrix:
-        directory: [cloud, migrated-webserver, rds, vpcpeer]
+        directory: [cloud, migrated-webserver, rds, vpcpeer, secrets]
     steps:
       - name: Clone our repository
         uses: actions/checkout@v3
@@ -56,7 +54,7 @@ jobs:
       #     git-push: "true"  
       - name: Terraform Plan secrets
         id: plan
-        working-directory: ./secrets
+        working-directory: secrets
         run: terraform plan -no-color -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
         continue-on-error: true
 
