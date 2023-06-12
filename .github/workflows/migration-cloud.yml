@@ -197,7 +197,7 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: cloud
+          directory: ${{ matrix.directory }}
           framework: terraform
           soft_fail: true
           download_external_modules: true
