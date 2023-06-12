@@ -60,14 +60,14 @@ resource "aws_security_group" "web_server_sg" {
     security_groups = [aws_security_group.lb_internet_face.id]
   }
 
-  ingress {
-    cidr_blocks = [jsondecode(data.aws_secretsmanager_secret_version.by_value.secret_string).myaddress1]
-    description = "ssh from VPC"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+  # ingress {
+  #   cidr_blocks = [jsondecode(data.aws_secretsmanager_secret_version.by_value.secret_string).myaddress1]
+  #   description = "ssh from VPC"
+  #   from_port   = 22
+  #   to_port     = 22
+  #   protocol    = "tcp"
 
-  }
+  # }
 
   egress {
     description      = "default"

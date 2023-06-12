@@ -5,7 +5,7 @@ resource "aws_instance" "migrated_web_server" {
   ami                         = data.aws_ami.migrated_ami.id
   instance_type               = "t3.small"
   key_name                    = data.aws_key_pair.cloud_key.key_name
-  iam_instance_profile        = aws_iam_instance_profile.ssm_profile1.id
+  iam_instance_profile        = aws_iam_instance_profile.ssm_profile_auto.id
   private_dns_name_options {
     enable_resource_name_dns_a_record = true
   }
@@ -25,7 +25,9 @@ resource "aws_instance" "migrated_web_server" {
 
   tags = {
     Name = "Migrated-webserver-Server"
+    Backup = "AMI-backup"
   }
+  volume_tags = local.deafult_tags
 }
 
 resource "aws_network_interface" "migrate_web" {
