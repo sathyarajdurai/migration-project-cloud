@@ -9,11 +9,11 @@ on:
 jobs:
   terraform-actions:
     runs-on:  ubuntu-latest
-    permissions: write-all
-      # packages: write
-      # contents: read
-      # id-token: write
-      # pull-requests: write
+    permissions: 
+      packages: write
+      contents: read
+      id-token: write
+      pull-requests: write
     
     strategy:
       matrix:
@@ -38,6 +38,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name:  Terraform initialization
+        working-directory: secrets
         run:  terraform init 
 
       - name:  Terraform validation
@@ -54,7 +55,12 @@ jobs:
       #     working-dir: cloud
       #     output-file: ../README.md
       #     output-method: inject
-      #     git-push: "true"  
+      #     git-push: "true" 
+      - name: Terraform Plan secrets
+        id: plan
+        working-directory: secrets
+        run: terraform plan -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
+        continue-on-error: true 
 
       - name: Terraform Plan all
         id: plan_all
@@ -113,50 +119,50 @@ jobs:
         if: github.event_name != 'pull_request'
         run:  terraform apply -auto-approve
 
-  terraform-actions1:
-    runs-on:  ubuntu-latest
-    permissions: write-all
-      # packages: write
-      # contents: read
-      # id-token: write
-      # pull-requests: write
-    defaults:
-        run:
-          working-directory: secrets
-    steps:
-      - name: Clone our repository
-        uses: actions/checkout@v3
-        with:
-          ref: '${{ github.event.pull_request.base.ref }}'
+  # terraform-actions1:
+  #   runs-on:  ubuntu-latest
+  #   permissions: 
+  #     packages: write
+  #     contents: read
+  #     id-token: write
+  #     pull-requests: write
+  #   defaults:
+  #       run:
+  #         working-directory: secrets
+  #   steps:
+  #     - name: Clone our repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         ref: '${{ github.event.pull_request.base.ref }}'
       
-      - name: AWS Authentication
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: arn:aws:iam::722257929281:role/github-actions-iodc
-          aws-region: eu-west-1
-          role-session-name: GithubmigratiocloudnDeploy
+  #     - name: AWS Authentication
+  #       uses: aws-actions/configure-aws-credentials@v2
+  #       with:
+  #         role-to-assume: arn:aws:iam::722257929281:role/github-actions-iodc
+  #         aws-region: eu-west-1
+  #         role-session-name: GithubmigratiocloudnDeploy
       
-      - name: Terraform Set up
-        uses: hashicorp/setup-terraform@v1
+  #     - name: Terraform Set up
+  #       uses: hashicorp/setup-terraform@v1
 
-      - name:  Terraform initialization
-        run:  terraform init 
+  #     - name:  Terraform initialization
+  #       run:  terraform init 
 
-      - name:  Terraform validation
-        run:  terraform validate
+  #     - name:  Terraform validation
+  #       run:  terraform validate
 
-      - name: Terraform readme
-        id: fmt
-        run:  terraform fmt    
+  #     - name: Terraform readme
+  #       id: fmt
+  #       run:  terraform fmt    
       
-      - name: Terraform Plan secrets
-        id: plan
-        run: terraform plan -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
-        continue-on-error: true
+  #     - name: Terraform Plan secrets
+  #       id: plan
+  #       run: terraform plan -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
+  #       continue-on-error: true
       
-      - name: Terraform applying
-        if: github.event_name != 'pull_request'
-        run:  terraform apply -auto-approve -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
+  #     - name: Terraform applying
+  #       if: github.event_name != 'pull_request'
+  #       run:  terraform apply -auto-approve -var="pass=${{ secrets.RDS_PASS }}" -var="address=${{ secrets.MY_ADD }}"
           
   infracost-deploy:
     runs-on:  ubuntu-latest
